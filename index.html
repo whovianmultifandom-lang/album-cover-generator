@@ -6,9 +6,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 <style>
   body { font-family: Arial, sans-serif; padding: 20px; }
-  .container { width: 400px; height: 400px; margin-bottom: 20px; }
+  .container { width: 400px; height: 400px; margin-bottom: 20px; border: 1px solid #ccc; position: relative; }
   .container img { width: 100%; height: 100%; object-fit: contain; display: block; }
   button { padding: 10px 15px; font-size: 16px; cursor: pointer; margin-bottom: 20px; }
+  canvas { border: 1px solid #ccc; display: block; margin-top: 20px; }
 </style>
 </head>
 <body>
@@ -20,9 +21,8 @@
 </div>
 
 <button id="generer">Générer et Télécharger</button>
-<br>
 
-<canvas id="canvas" width="500" height="500" style="border:1px solid #ccc;"></canvas>
+<canvas id="canvas" width="500" height="500"></canvas>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script>
@@ -30,20 +30,20 @@ const image = document.getElementById('image');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-// Initialiser Cropper immédiatement pour que l'utilisateur puisse déplacer l'image
+// Initialiser Cropper pour que l'utilisateur puisse déplacer, zoomer et rogner
 const cropper = new Cropper(image, {
   aspectRatio: 1,      // carré
   viewMode: 1,
-  autoCropArea: 1,     // occupe tout le cadre
+  autoCropArea: 1,     // occupe tout le carré
   movable: true,       // déplacement libre
   zoomable: true,      // zoom
   rotatable: true,     // rotation
-  dragMode: 'move',    // clique-glisse pour bouger
+  dragMode: 'move',    // cliquer-glisser pour déplacer
   responsive: true
 });
 
 document.getElementById('generer').addEventListener('click', () => {
-  // Récupérer l'image rognée telle que l'utilisateur l'a cadrée
+  // Récupérer l'image rognée
   const croppedCanvas = cropper.getCroppedCanvas({
     width: 400,
     height: 400
@@ -52,7 +52,7 @@ document.getElementById('generer').addEventListener('click', () => {
   // Effacer le canvas principal
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Dessiner l'image rognée sur le canvas
+  // Dessiner l'image rognée
   ctx.drawImage(croppedCanvas, 50, 50);
 
   // Télécharger l'image finale
