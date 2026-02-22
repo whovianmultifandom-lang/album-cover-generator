@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Minimalist Album Cover Generator</title>
 <style>
   body {
     font-family: 'Arial', sans-serif;
-    background: #f0f0f0;
+    background: #f5f5f5;
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: 30px;
   }
 
   .controls {
@@ -19,47 +19,63 @@
 
   .controls input, .controls textarea, .controls button {
     width: 100%;
-    margin: 5px 0;
+    margin: 8px 0;
     padding: 8px;
     font-size: 14px;
   }
 
   .album-container {
     width: 400px;
+    height: 600px;
     background: #fff;
     display: flex;
     flex-direction: column;
-    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
 
   .cover-image {
     width: 100%;
-    height: 400px;
+    height: 50%;
     background: #111;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
-    font-size: 24px;
-    font-weight: bold;
     position: relative;
-    overflow: hidden;
+  }
+
+  .cover-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .album-info {
     padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
   }
 
   .album-title {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     text-transform: uppercase;
     margin: 0;
   }
 
+  .album-artist {
+    font-size: 18px;
+    margin: 0;
+    color: #333;
+  }
+
   .album-year {
     font-size: 12px;
-    margin-bottom: 10px;
+    color: #555;
   }
 
   .tracklist {
@@ -67,14 +83,23 @@
     justify-content: space-between;
     font-size: 14px;
     flex-wrap: wrap;
+    gap: 10px;
   }
 
   #left-tracks, #right-tracks {
-    text-align: left;
+    width: 48%;
   }
 
   button {
     cursor: pointer;
+    background: #111;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background: #333;
   }
 
 </style>
@@ -86,68 +111,72 @@
   <input id="title" placeholder="Titre de l'album">
   <input id="artist" placeholder="Nom de l'artiste">
   <input id="year" placeholder="Année">
-  <textarea id="tracks" placeholder="Liste des chansons, une par ligne"></textarea>
+  <textarea id="tracks" placeholder="Liste des chansons, une par ligne (facultatif)"></textarea>
   <input type="file" id="bgImage" accept="image/*">
   <button onclick="generate()">Générer la cover</button>
   <button onclick="downloadCover()">Télécharger en PNG</button>
 </div>
 
 <div class="album-container" id="album">
-  <div class="cover-image" id="cover-image">Artiste</div>
+  <div class="cover-image" id="cover-image">
+    <!-- Image obligatoire -->
+  </div>
   <div class="album-info">
     <p class="album-title" id="album-title">Titre</p>
+    <p class="album-artist" id="album-artist">Artiste</p>
     <p class="album-year" id="album-year">2024</p>
-    <div class="tracklist">
+    <div class="tracklist" id="tracklist">
       <div id="left-tracks"></div>
       <div id="right-tracks"></div>
     </div>
   </div>
 </div>
 
-<!-- Bibliothèque pour télécharger la cover en image -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
 <script>
 function generate() {
   const title = document.getElementById("title").value || "Titre";
   const artist = document.getElementById("artist").value || "Artiste";
   const year = document.getElementById("year").value || "2024";
-  const tracks = document.getElementById("tracks").value.split('\n');
+  const tracks = document.getElementById("tracks").value.split('\n').filter(t => t.trim() !== '');
   const bgFile = document.getElementById("bgImage").files[0];
 
-  // Mettre à jour le texte
-  document.getElementById("album-title").innerText = title.toUpperCase();
-  document.getElementById("album-year").innerText = year;
-  document.getElementById("cover-image").innerText = artist;
-
-  // Séparer les chansons en deux colonnes
-  const middle = Math.ceil(tracks.length / 2);
-  const left = tracks.slice(0, middle).join('<br>');
-  const right = tracks.slice(middle).join('<br>');
-  document.getElementById("left-tracks").innerHTML = left;
-  document.getElementById("right-tracks").innerHTML = right;
-
-  // Ajouter le fond
-  const cover = document.getElementById("cover-image");
-  if(bgFile){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      cover.style.background = `url(${e.target.result}) center/cover no-repeat`;
-      cover.style.color = 'white';
-    }
-    reader.readAsDataURL(bgFile);
-  } else {
-    // Couleur aléatoire si pas d'image
-    const colors = ['#e63946','#f1faee','#a8dadc','#457b9d','#1d3557','#ffbe0b','#fb5607','#ff006e'];
-    cover.style.background = colors[Math.floor(Math.random() * colors.length)];
-    cover.style.color = 'white';
+  if (!bgFile) {
+    alert("L'image de fond est obligatoire !");
+    return;
   }
+
+  // Mettre à jour le texte
+  document.getElementById("album-title").innerText = title;
+  document.getElementById("album-artist").innerText = artist;
+  document.getElementById("album-year").innerText = year;
+
+  // Gérer les chansons si présentes
+  const leftTracks = document.getElementById("left-tracks");
+  const rightTracks = document.getElementById("right-tracks");
+  if (tracks.length > 0) {
+    const middle = Math.ceil(tracks.length / 2);
+    leftTracks.innerHTML = tracks.slice(0, middle).join('<br>');
+    rightTracks.innerHTML = tracks.slice(middle).join('<br>');
+  } else {
+    leftTracks.innerHTML = '';
+    rightTracks.innerHTML = '';
+  }
+
+  // Ajouter l'image obligatoire
+  const coverDiv = document.getElementById("cover-image");
+  coverDiv.innerHTML = ''; // vider l'ancien contenu
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    coverDiv.appendChild(img);
+  }
+  reader.readAsDataURL(bgFile);
 }
 
-// Télécharger la cover en PNG
 function downloadCover() {
-  const album = document.getElementById("album");
-  html2canvas(album).then(canvas => {
+  html2canvas(document.getElementById("album")).then(canvas => {
     const link = document.createElement('a');
     link.download = 'album-cover.png';
     link.href = canvas.toDataURL();
