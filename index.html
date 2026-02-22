@@ -145,6 +145,9 @@ button:hover {
     <div class="color-circle" style="background:#457b9d" onclick="changeBackground('#457b9d')"></div>
     <div class="color-circle" style="background:#ffbe0b" onclick="changeBackground('#ffbe0b')"></div>
     <div class="color-circle" style="background:#ff006e" onclick="changeBackground('#ff006e')"></div>
+    <!-- Sélecteur complet de couleurs -->
+    <input type="color" id="fullColorPicker" value="#ffffff" 
+           onchange="changeBackground(this.value)" style="margin-left:10px; cursor:pointer; width:40px; height:30px; border:none; padding:0;">
   </div>
 
   <button onclick="generate()">Générer la cover</button>
