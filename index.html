@@ -1,10 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Minimalist Album Cover Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+
+    #cover {
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+      border-radius: 10px;
+    }
+
+    #download {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Mon générateur de covers minimalistes</h1>
-  <p>Le site fonctionne !</p>
+
+  <h1>Minimalist Album Cover Generator</h1>
+
+  <input id="artist" placeholder="Nom de l'artiste">
+  <input id="title" placeholder="Titre de l'album">
+  <button onclick="generate()">Générer</button>
+
+  <div id="cover">Votre cover apparaîtra ici</div>
+
+  <button id="download" onclick="downloadCover()">Télécharger</button>
+
+  <script>
+    function randomColor() {
+      const colors = ['#e63946','#f1faee','#a8dadc','#457b9d','#1d3557','#ffbe0b','#fb5607','#ff006e'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function generate() {
+      const artist = document.getElementById("artist").value || "Artiste";
+      const title = document.getElementById("title").value || "Album";
+
+      const cover = document.getElementById("cover");
+      cover.style.background = randomColor();
+      cover.innerHTML = `<div>${artist}</div><div>${title}</div>`;
+    }
+
+    function downloadCover() {
+      const cover = document.getElementById("cover");
+      html2canvas(cover).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'album-cover.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+
+  <!-- Bibliothèque pour télécharger le cover en image -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 </body>
 </html>
