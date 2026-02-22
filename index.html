@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Album Pinterest Style</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -45,7 +46,7 @@ body {
   width:400px;
   height:650px;
   background:#fff;
-  border-radius:0; /* Coins pointus */
+  border-radius:0;
   overflow:hidden;
   box-shadow:0 4px 12px rgba(0,0,0,0.2);
   padding:10px;
@@ -57,19 +58,22 @@ body {
 .cover-image {
   width:100%;
   height:50%;
-  border-radius:0; /* Coins pointus */
+  border-radius:0;
   overflow:hidden;
   background:#111;
   margin-bottom:10px;
   display:flex;
   justify-content:center;
   align-items:center;
+  position: relative;
 }
 
 .cover-image img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  display:block;
+  cursor:move;
 }
 
 .album-info {
@@ -160,7 +164,7 @@ button:hover {
   </div>
 
   <button onclick="generate()">Générer la cover</button>
-  <button onclick="downloadCover()">Télécharger en PNG</button>
+  <!-- Le bouton final sera ajouté dynamiquement après génération -->
 </div>
 
 <div class="album-container" id="album">
@@ -180,8 +184,10 @@ button:hover {
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script>
 let selectedColor = '#fff';
+let cropperInstance = null;
 
 function changeBackground(color){
   selectedColor=color;
@@ -226,6 +232,27 @@ function generate(){
       const img = document.createElement('img');
       img.src = e.target.result;
       coverDiv.appendChild(img);
+
+      // Initialiser Cropper après génération
+      if(cropperInstance) cropperInstance.destroy();
+      cropperInstance = new Cropper(img, {
+        aspectRatio: coverDiv.offsetWidth / coverDiv.offsetHeight,
+        viewMode: 1,
+        movable: true,
+        zoomable: true,
+        rotatable: true,
+        autoCropArea: 1,
+        dragMode: 'move'
+      });
+
+      // Ajouter bouton final si pas déjà présent
+      if(!document.getElementById("final-download")){
+        const btnFinal = document.createElement("button");
+        btnFinal.id = "final-download";
+        btnFinal.innerText = "Finaliser et Télécharger";
+        btnFinal.onclick = downloadCover;
+        document.querySelector(".controls").appendChild(btnFinal);
+      }
     }
     reader.readAsDataURL(bgFile);
   } else {
@@ -233,25 +260,30 @@ function generate(){
   }
 }
 
-// Fonction downloadCover() corrigée
-function downloadCover() {
-  const album = document.getElementById("album");
+function downloadCover(){
+  // Si Cropper actif, remplacer l'image par le crop final
+  if(cropperInstance){
+    const croppedCanvas = cropperInstance.getCroppedCanvas();
+    const img = document.createElement('img');
+    img.src = croppedCanvas.toDataURL();
+    const coverDiv = document.getElementById("cover-image");
+    coverDiv.innerHTML = '';
+    coverDiv.appendChild(img);
+    cropperInstance.destroy();
+    cropperInstance = null;
+  }
 
+  // Cloner l'album pour html2canvas
+  const album = document.getElementById("album");
   const clone = album.cloneNode(true);
   clone.style.transform = 'scale(1)';
   clone.style.boxShadow = 'none';
   clone.style.position = 'absolute';
   clone.style.top = '-10000px';
   clone.style.left = '-10000px';
-
   document.body.appendChild(clone);
 
-  html2canvas(clone, {
-    scale: 3,
-    useCORS: true,
-    allowTaint: true,
-    backgroundColor: null
-  }).then(canvas => {
+  html2canvas(clone, {scale:3, useCORS:true, allowTaint:true, backgroundColor:null}).then(canvas=>{
     const link = document.createElement('a');
     link.download = 'album-cover.png';
     link.href = canvas.toDataURL('image/png');
