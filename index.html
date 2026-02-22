@@ -2,47 +2,24 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Rogner le PNJ avec texte</title>
+<title>Éditeur Cover PNJ</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
-  .container {
-    max-width: 400px;
-    margin-bottom: 20px;
-  }
-  img {
-    max-width: 100%;
-    display: block;
-  }
-  textarea {
-    width: 400px;
-    height: 100px;
-    margin-bottom: 10px;
-    font-size: 16px;
-  }
-  button {
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-bottom: 20px;
-  }
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  .container { width: 400px; height: 400px; margin-bottom: 20px; }
+  .container img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  button { padding: 10px 15px; font-size: 16px; cursor: pointer; margin-bottom: 20px; }
 </style>
 </head>
 <body>
 
-<h2>Rogner votre PNJ et ajouter du texte</h2>
+<h2>Éditeur Cover PNJ</h2>
 
 <div class="container">
   <img id="image" src="pnj.png" alt="PNJ à rogner">
 </div>
 
-<textarea id="texte" placeholder="Écris ton texte ici..."></textarea>
-<br>
-
-<button id="generer">Générer et Télécharger l'image</button>
+<button id="generer">Générer et Télécharger</button>
 <br>
 
 <canvas id="canvas" width="500" height="500" style="border:1px solid #ccc;"></canvas>
@@ -50,23 +27,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script>
 const image = document.getElementById('image');
-const textarea = document.getElementById('texte');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-// Initialiser Cropper directement dès le chargement
+// Initialiser Cropper immédiatement pour que l'utilisateur puisse déplacer l'image
 const cropper = new Cropper(image, {
   aspectRatio: 1,      // carré
   viewMode: 1,
-  autoCropArea: 0.8,
-  movable: true,       // permet de déplacer l'image
+  autoCropArea: 1,     // occupe tout le cadre
+  movable: true,       // déplacement libre
   zoomable: true,      // zoom
   rotatable: true,     // rotation
+  dragMode: 'move',    // clique-glisse pour bouger
   responsive: true
 });
 
 document.getElementById('generer').addEventListener('click', () => {
-  // Récupérer l'image rognée
+  // Récupérer l'image rognée telle que l'utilisateur l'a cadrée
   const croppedCanvas = cropper.getCroppedCanvas({
     width: 400,
     height: 400
@@ -75,26 +52,14 @@ document.getElementById('generer').addEventListener('click', () => {
   // Effacer le canvas principal
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Dessiner l'image rognée
+  // Dessiner l'image rognée sur le canvas
   ctx.drawImage(croppedCanvas, 50, 50);
-
-  // Ajouter le texte multiligne
-  ctx.fillStyle = 'black';
-  ctx.font = '20px Arial';
-  ctx.textAlign = 'left';
-  const lignes = textarea.value.split('\n');
-  let y = 470;
-  const margeX = 50;
-  lignes.forEach(ligne => {
-    ctx.fillText(ligne, margeX, y);
-    y += 25;
-  });
 
   // Télécharger l'image finale
   croppedCanvas.toBlob(blob => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'pnj_texte.png';
+    link.download = 'cover_final.png';
     link.click();
   }, 'image/png');
 });
