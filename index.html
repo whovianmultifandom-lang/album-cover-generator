@@ -131,7 +131,9 @@ button:hover {
   <input id="artist" placeholder="Nom de l'artiste">
   <input id="year" placeholder="Année">
   <textarea id="tracks" placeholder="Liste des chansons, une par ligne (facultatif)"></textarea>
-  <input type="file" id="bgImage" accept="image/png" required>
+  
+  <!-- Image acceptant PNG, JPEG et JPG -->
+  <input type="file" id="bgImage" accept="image/png, image/jpeg, image/jpg" required>
 
   <h4>Choisir la couleur du fond :</h4>
   <div class="color-palette">
@@ -178,8 +180,9 @@ function generate(){
   const tracks=document.getElementById("tracks").value.split('\n').filter(t=>t.trim()!=="");
   const bgFile=document.getElementById("bgImage").files[0];
 
-  if(!bgFile){
-    alert("Image PNG obligatoire !");
+  // Vérification : fichier image valide (PNG, JPEG, JPG)
+  if(!bgFile || !bgFile.type.startsWith("image/")){
+    alert("Veuillez sélectionner un fichier image valide (PNG, JPEG ou JPG) !");
     return;
   }
 
