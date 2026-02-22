@@ -238,11 +238,24 @@ function generate(){
   }
 }
 
-function downloadCover(){
-  html2canvas(document.getElementById("album")).then(canvas=>{
+function downloadCover() {
+  const album = document.getElementById("album");
+
+  // Cloner l'album pour éviter de modifier l'affichage sur le site
+  const clone = album.cloneNode(true);
+  clone.style.transform = 'scale(1)'; // s'assurer que rien ne déforme
+  clone.style.boxShadow = 'none'; // enlever l'ombre pour la version finale
+
+  // Utiliser html2canvas avec haute résolution
+  html2canvas(clone, {
+    scale: 3, // multiplie la résolution pour une image nette
+    useCORS: true, // permet de prendre en compte les images externes
+    allowTaint: true,
+    backgroundColor: null // conserve la couleur de fond du div
+  }).then(canvas => {
     const link = document.createElement('a');
-    link.download='album-cover.png';
-    link.href = canvas.toDataURL();
+    link.download = 'album-cover.png';
+    link.href = canvas.toDataURL('image/png');
     link.click();
   });
 }
