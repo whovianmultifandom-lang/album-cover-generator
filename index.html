@@ -142,7 +142,6 @@ button:hover {
   <textarea id="tracks" placeholder="Liste des chansons en deux colonnes (facultatif)"></textarea>
   <textarea id="singleText" placeholder="Texte en une seule colonne (facultatif)"></textarea>
   
-  <!-- Image facultative -->
   <input type="file" id="bgImage" accept="image/png, image/jpeg, image/jpg">
 
   <h4>Choisir la couleur du fond :</h4>
@@ -206,7 +205,6 @@ function generate(){
   document.getElementById("album-artist").innerText = artist || '';
   document.getElementById("album-year").innerText = year || '';
 
-  // Colonnes pour les chansons
   const leftTracks = document.getElementById("left-tracks");
   const rightTracks = document.getElementById("right-tracks");
   if(tracks.length>0){
@@ -218,10 +216,8 @@ function generate(){
     rightTracks.innerHTML = '';
   }
 
-  // Texte en colonne unique
   document.getElementById("single-column").innerHTML = singleText || '';
 
-  // Image
   const coverDiv = document.getElementById("cover-image");
   coverDiv.innerHTML='';
   if(bgFile && bgFile.type.startsWith("image/")){
@@ -237,17 +233,22 @@ function generate(){
   }
 }
 
-// Fonction améliorée pour téléchargement fidèle
+// Nouvelle fonction downloadCover() corrigée
 function downloadCover() {
   const album = document.getElementById("album");
 
-  // Cloner pour ne pas altérer le site
+  // Cloner l'album
   const clone = album.cloneNode(true);
   clone.style.transform = 'scale(1)';
   clone.style.boxShadow = 'none';
+  clone.style.position = 'absolute';
+  clone.style.top = '-10000px';
+  clone.style.left = '-10000px';
+
+  document.body.appendChild(clone); // ajouter au DOM
 
   html2canvas(clone, {
-    scale: 3, // haute résolution
+    scale: 3,
     useCORS: true,
     allowTaint: true,
     backgroundColor: null
@@ -256,6 +257,7 @@ function downloadCover() {
     link.download = 'album-cover.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
+    document.body.removeChild(clone); // nettoyer le clone
   });
 }
 </script>
