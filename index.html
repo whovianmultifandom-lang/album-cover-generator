@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Rogner le PNJ avec texte</title>
+<title>Rogner et déplacer l'image</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 <style>
   body {
@@ -17,88 +17,49 @@
     max-width: 100%;
     display: block;
   }
-  textarea {
-    width: 400px;
-    height: 100px;
-    margin-bottom: 10px;
-    font-size: 16px;
-  }
   button {
     padding: 10px 15px;
     font-size: 16px;
     cursor: pointer;
-    margin-bottom: 20px;
   }
 </style>
 </head>
 <body>
 
-<h2>Rogner votre PNJ et ajouter du texte</h2>
+<h2>Déplacer, zoomer et rogner votre image</h2>
 
-<!-- Zone de recadrage -->
 <div class="container">
-  <img id="image" src="pnj.png" alt="PNJ à rogner">
+  <img id="image" src="pnj.png" alt="Image à rogner">
 </div>
 
-<!-- Saisie du texte multiligne -->
-<textarea id="texte" placeholder="Écris ton texte ici..."></textarea>
-<br>
-
-<button id="generer">Générer et Télécharger l'image</button>
-<br>
-
-<canvas id="canvas" width="500" height="500" style="border:1px solid #ccc;"></canvas>
+<button id="download">Télécharger l'image rognée</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script>
   const image = document.getElementById('image');
-  const textarea = document.getElementById('texte');
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
 
-  // Initialiser Cropper.js
+  // Initialiser Cropper
   const cropper = new Cropper(image, {
-    aspectRatio: 1,
     viewMode: 1,
+    dragMode: 'move', // permet de déplacer l'image dans le cadre
     autoCropArea: 0.8,
-    responsive: true,
-    background: true,
     movable: true,
     zoomable: true,
-    rotatable: true
+    rotatable: true,
+    scalable: true
   });
 
-  document.getElementById('generer').addEventListener('click', () => {
+  document.getElementById('download').addEventListener('click', () => {
     // Récupérer l'image rognée
     const croppedCanvas = cropper.getCroppedCanvas({
       width: 400,
       height: 400
     });
 
-    // Effacer le canvas principal
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Dessiner l'image rognée sur le canvas
-    ctx.drawImage(croppedCanvas, 50, 50); // 50px de marge
-
-    // Ajouter le texte multiligne
-    ctx.fillStyle = 'black';
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'left';
-    const lignes = textarea.value.split('\n'); // respecter les retours à la ligne
-    let y = 470; // position verticale du texte (en dessous de l'image)
-    const margeX = 50; // alignement horizontal
-
-    lignes.forEach(ligne => {
-      ctx.fillText(ligne, margeX, y);
-      y += 25; // espace entre les lignes
-    });
-
-    // Télécharger l'image finale
-    canvas.toBlob(blob => {
+    croppedCanvas.toBlob(blob => {
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'pnj_texte.png';
+      link.download = 'image_rognee.png';
       link.click();
     }, 'image/png');
   });
