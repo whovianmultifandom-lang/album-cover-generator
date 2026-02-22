@@ -153,7 +153,6 @@ button:hover {
     <div class="color-circle" style="background:#457b9d" onclick="changeBackground('#457b9d')"></div>
     <div class="color-circle" style="background:#ffbe0b" onclick="changeBackground('#ffbe0b')"></div>
     <div class="color-circle" style="background:#ff006e" onclick="changeBackground('#ff006e')"></div>
-    <!-- Sélecteur complet de couleurs avec texte explicatif -->
     <label style="display:flex; align-items:center; gap:5px; font-size:14px;">
       Choisir n'importe quelle couleur :
       <input type="color" id="fullColorPicker" value="#ffffff" 
@@ -238,20 +237,20 @@ function generate(){
   }
 }
 
+// Fonction améliorée pour téléchargement fidèle
 function downloadCover() {
   const album = document.getElementById("album");
 
-  // Cloner l'album pour éviter de modifier l'affichage sur le site
+  // Cloner pour ne pas altérer le site
   const clone = album.cloneNode(true);
-  clone.style.transform = 'scale(1)'; // s'assurer que rien ne déforme
-  clone.style.boxShadow = 'none'; // enlever l'ombre pour la version finale
+  clone.style.transform = 'scale(1)';
+  clone.style.boxShadow = 'none';
 
-  // Utiliser html2canvas avec haute résolution
   html2canvas(clone, {
-    scale: 3, // multiplie la résolution pour une image nette
-    useCORS: true, // permet de prendre en compte les images externes
+    scale: 3, // haute résolution
+    useCORS: true,
     allowTaint: true,
-    backgroundColor: null // conserve la couleur de fond du div
+    backgroundColor: null
   }).then(canvas => {
     const link = document.createElement('a');
     link.download = 'album-cover.png';
