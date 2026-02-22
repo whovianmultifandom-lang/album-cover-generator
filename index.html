@@ -29,6 +29,7 @@ body {
   flex-wrap:wrap;
   gap:8px;
   margin:8px 0;
+  align-items:center;
 }
 
 .color-circle {
@@ -42,7 +43,7 @@ body {
 
 .album-container {
   width:400px;
-  height:600px;
+  height:650px;
   background:#fff;
   border-radius:15px;
   overflow:hidden;
@@ -55,7 +56,7 @@ body {
 
 .cover-image {
   width:100%;
-  height:50%; /* moitié du rectangle */
+  height:50%;
   border-radius:10px;
   overflow:hidden;
   background:#111;
@@ -111,6 +112,13 @@ body {
   width:48%;
 }
 
+#single-column {
+  width:100%;
+  margin-top:5px;
+  font-size:14px;
+  opacity:0.8;
+}
+
 button {
   cursor:pointer;
   background:#111;
@@ -128,10 +136,11 @@ button:hover {
 
 <div class="controls">
   <h2>Créer ton album cover</h2>
-  <input id="title" placeholder="Titre de l'album" required>
+  <input id="title" placeholder="Titre de l'album (obligatoire)" required>
   <input id="artist" placeholder="Nom de l'artiste (facultatif)">
   <input id="year" placeholder="Année (facultatif)">
-  <textarea id="tracks" placeholder="Liste des chansons, une par ligne (facultatif)"></textarea>
+  <textarea id="tracks" placeholder="Liste des chansons en deux colonnes (facultatif)"></textarea>
+  <textarea id="singleText" placeholder="Texte en une seule colonne (facultatif)"></textarea>
   
   <!-- Image facultative -->
   <input type="file" id="bgImage" accept="image/png, image/jpeg, image/jpg">
@@ -144,9 +153,12 @@ button:hover {
     <div class="color-circle" style="background:#457b9d" onclick="changeBackground('#457b9d')"></div>
     <div class="color-circle" style="background:#ffbe0b" onclick="changeBackground('#ffbe0b')"></div>
     <div class="color-circle" style="background:#ff006e" onclick="changeBackground('#ff006e')"></div>
-    <!-- Sélecteur complet de couleurs -->
-    <input type="color" id="fullColorPicker" value="#ffffff" 
-           onchange="changeBackground(this.value)" style="margin-left:10px; cursor:pointer; width:40px; height:30px; border:none; padding:0;">
+    <!-- Sélecteur complet de couleurs avec texte explicatif -->
+    <label style="display:flex; align-items:center; gap:5px; font-size:14px;">
+      Choisir n'importe quelle couleur :
+      <input type="color" id="fullColorPicker" value="#ffffff" 
+             onchange="changeBackground(this.value)" style="cursor:pointer; width:40px; height:30px; border:none; padding:0;">
+    </label>
   </div>
 
   <button onclick="generate()">Générer la cover</button>
@@ -165,6 +177,7 @@ button:hover {
       <div id="left-tracks"></div>
       <div id="right-tracks"></div>
     </div>
+    <div id="single-column"></div>
   </div>
 </div>
 
@@ -187,19 +200,18 @@ function generate(){
   const artist = document.getElementById("artist").value.trim();
   const year = document.getElementById("year").value.trim();
   const tracks = document.getElementById("tracks").value.split('\n').filter(t=>t.trim()!=="");
+  const singleText = document.getElementById("singleText").value.trim();
   const bgFile = document.getElementById("bgImage").files[0];
 
   document.getElementById("album-title").innerText = title;
-
-  // Afficher artiste et année uniquement si renseignés
   document.getElementById("album-artist").innerText = artist || '';
   document.getElementById("album-year").innerText = year || '';
 
-  // Gestion des pistes
-  const leftTracks=document.getElementById("left-tracks");
-  const rightTracks=document.getElementById("right-tracks");
+  // Colonnes pour les chansons
+  const leftTracks = document.getElementById("left-tracks");
+  const rightTracks = document.getElementById("right-tracks");
   if(tracks.length>0){
-    const middle=Math.ceil(tracks.length/2);
+    const middle = Math.ceil(tracks.length/2);
     leftTracks.innerHTML = tracks.slice(0,middle).join('<br>');
     rightTracks.innerHTML = tracks.slice(middle).join('<br>');
   } else {
@@ -207,28 +219,30 @@ function generate(){
     rightTracks.innerHTML = '';
   }
 
-  // Gestion image
-  const coverDiv=document.getElementById("cover-image");
+  // Texte en colonne unique
+  document.getElementById("single-column").innerHTML = singleText || '';
+
+  // Image
+  const coverDiv = document.getElementById("cover-image");
   coverDiv.innerHTML='';
   if(bgFile && bgFile.type.startsWith("image/")){
     const reader = new FileReader();
     reader.onload = function(e){
-      const img=document.createElement('img');
+      const img = document.createElement('img');
       img.src = e.target.result;
       coverDiv.appendChild(img);
     }
     reader.readAsDataURL(bgFile);
   } else {
-    // Si pas d'image, juste fond coloré
     coverDiv.style.background = selectedColor;
   }
 }
 
 function downloadCover(){
   html2canvas(document.getElementById("album")).then(canvas=>{
-    const link=document.createElement('a');
+    const link = document.createElement('a');
     link.download='album-cover.png';
-    link.href=canvas.toDataURL();
+    link.href = canvas.toDataURL();
     link.click();
   });
 }
