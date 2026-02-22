@@ -6,82 +6,112 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
       background: #f0f0f0;
+      display: flex;
+      justify-content: center;
       padding: 20px;
     }
 
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      font-size: 16px;
-    }
-
-    #cover {
-      width: 300px;
-      height: 300px;
-      margin: 20px auto;
+    .album-container {
+      width: 400px;
+      background: #fff;
       display: flex;
       flex-direction: column;
+      border: 1px solid #ccc;
+    }
+
+    .cover-image {
+      width: 100%;
+      height: 400px;
+      background: #111;
+      display: flex;
       justify-content: center;
       align-items: center;
       color: white;
+      font-size: 24px;
       font-weight: bold;
-      font-size: 20px;
-      border-radius: 10px;
     }
 
-    #download {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
+    .album-info {
+      padding: 20px;
     }
+
+    .album-title {
+      font-size: 28px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .album-year {
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .tracklist {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+
+    input, textarea, button {
+      padding: 8px;
+      margin: 5px 0;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    button {
+      width: auto;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
 
-  <h1>Minimalist Album Cover Generator</h1>
-
-  <input id="artist" placeholder="Nom de l'artiste">
+<div>
+  <h2>Créer ton album cover</h2>
   <input id="title" placeholder="Titre de l'album">
-  <button onclick="generate()">Générer</button>
+  <input id="artist" placeholder="Artiste">
+  <input id="year" placeholder="Année">
+  <textarea id="tracks" placeholder="Liste des chansons, une par ligne"></textarea>
+  <button onclick="generate()">Générer la cover</button>
+</div>
 
-  <div id="cover">Votre cover apparaîtra ici</div>
+<div class="album-container" id="album">
+  <div class="cover-image" id="cover-image">Image</div>
+  <div class="album-info">
+    <p class="album-title" id="album-title">Titre</p>
+    <p class="album-year" id="album-year">2024</p>
+    <div class="tracklist" id="tracklist">
+      <div id="left-tracks"></div>
+      <div id="right-tracks"></div>
+    </div>
+  </div>
+</div>
 
-  <button id="download" onclick="downloadCover()">Télécharger</button>
+<script>
+  function generate() {
+    const title = document.getElementById("title").value || "Titre";
+    const artist = document.getElementById("artist").value || "Artiste";
+    const year = document.getElementById("year").value || "2024";
+    const tracks = document.getElementById("tracks").value.split('\n');
 
-  <script>
-    function randomColor() {
-      const colors = ['#e63946','#f1faee','#a8dadc','#457b9d','#1d3557','#ffbe0b','#fb5607','#ff006e'];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
+    document.getElementById("album-title").innerText = title.toUpperCase();
+    document.getElementById("album-year").innerText = year;
+    document.getElementById("cover-image").innerText = artist;
 
-    function generate() {
-      const artist = document.getElementById("artist").value || "Artiste";
-      const title = document.getElementById("title").value || "Album";
+    // Séparer les chansons en deux colonnes
+    const middle = Math.ceil(tracks.length / 2);
+    const left = tracks.slice(0, middle).join('<br>');
+    const right = tracks.slice(middle).join('<br>');
 
-      const cover = document.getElementById("cover");
-      cover.style.background = randomColor();
-      cover.innerHTML = `<div>${artist}</div><div>${title}</div>`;
-    }
-
-    function downloadCover() {
-      const cover = document.getElementById("cover");
-      html2canvas(cover).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'album-cover.png';
-        link.href = canvas.toDataURL();
-        link.click();
-      });
-    }
-  </script>
-
-  <!-- Bibliothèque pour télécharger le cover en image -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    document.getElementById("left-tracks").innerHTML = left;
+    document.getElementById("right-tracks").innerHTML = right;
+  }
+</script>
 
 </body>
 </html>
