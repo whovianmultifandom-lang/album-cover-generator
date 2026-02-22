@@ -1,116 +1,159 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Minimalist Album Cover Generator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-    }
+<meta charset="UTF-8">
+<title>Minimalist Album Cover Generator</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
 
-    .album-container {
-      width: 400px;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid #ccc;
-    }
+  .controls {
+    width: 300px;
+    margin-right: 40px;
+  }
 
-    .cover-image {
-      width: 100%;
-      height: 400px;
-      background: #111;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 24px;
-      font-weight: bold;
-    }
+  .controls input, .controls textarea, .controls button {
+    width: 100%;
+    margin: 5px 0;
+    padding: 8px;
+    font-size: 14px;
+  }
 
-    .album-info {
-      padding: 20px;
-    }
+  .album-container {
+    width: 400px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+  }
 
-    .album-title {
-      font-size: 28px;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin: 0;
-    }
+  .cover-image {
+    width: 100%;
+    height: 400px;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+  }
 
-    .album-year {
-      font-size: 12px;
-      margin-bottom: 10px;
-    }
+  .album-info {
+    padding: 20px;
+  }
 
-    .tracklist {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      flex-wrap: wrap;
-    }
+  .album-title {
+    font-size: 28px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+  }
 
-    input, textarea, button {
-      padding: 8px;
-      margin: 5px 0;
-      width: 100%;
-      font-size: 14px;
-    }
+  .album-year {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
 
-    button {
-      width: auto;
-      cursor: pointer;
-    }
+  .tracklist {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
 
-  </style>
+  #left-tracks, #right-tracks {
+    text-align: left;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+</style>
 </head>
 <body>
 
-<div>
+<div class="controls">
   <h2>Créer ton album cover</h2>
   <input id="title" placeholder="Titre de l'album">
-  <input id="artist" placeholder="Artiste">
+  <input id="artist" placeholder="Nom de l'artiste">
   <input id="year" placeholder="Année">
   <textarea id="tracks" placeholder="Liste des chansons, une par ligne"></textarea>
+  <input type="file" id="bgImage" accept="image/*">
   <button onclick="generate()">Générer la cover</button>
+  <button onclick="downloadCover()">Télécharger en PNG</button>
 </div>
 
 <div class="album-container" id="album">
-  <div class="cover-image" id="cover-image">Image</div>
+  <div class="cover-image" id="cover-image">Artiste</div>
   <div class="album-info">
     <p class="album-title" id="album-title">Titre</p>
     <p class="album-year" id="album-year">2024</p>
-    <div class="tracklist" id="tracklist">
+    <div class="tracklist">
       <div id="left-tracks"></div>
       <div id="right-tracks"></div>
     </div>
   </div>
 </div>
 
+<!-- Bibliothèque pour télécharger la cover en image -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <script>
-  function generate() {
-    const title = document.getElementById("title").value || "Titre";
-    const artist = document.getElementById("artist").value || "Artiste";
-    const year = document.getElementById("year").value || "2024";
-    const tracks = document.getElementById("tracks").value.split('\n');
+function generate() {
+  const title = document.getElementById("title").value || "Titre";
+  const artist = document.getElementById("artist").value || "Artiste";
+  const year = document.getElementById("year").value || "2024";
+  const tracks = document.getElementById("tracks").value.split('\n');
+  const bgFile = document.getElementById("bgImage").files[0];
 
-    document.getElementById("album-title").innerText = title.toUpperCase();
-    document.getElementById("album-year").innerText = year;
-    document.getElementById("cover-image").innerText = artist;
+  // Mettre à jour le texte
+  document.getElementById("album-title").innerText = title.toUpperCase();
+  document.getElementById("album-year").innerText = year;
+  document.getElementById("cover-image").innerText = artist;
 
-    // Séparer les chansons en deux colonnes
-    const middle = Math.ceil(tracks.length / 2);
-    const left = tracks.slice(0, middle).join('<br>');
-    const right = tracks.slice(middle).join('<br>');
+  // Séparer les chansons en deux colonnes
+  const middle = Math.ceil(tracks.length / 2);
+  const left = tracks.slice(0, middle).join('<br>');
+  const right = tracks.slice(middle).join('<br>');
+  document.getElementById("left-tracks").innerHTML = left;
+  document.getElementById("right-tracks").innerHTML = right;
 
-    document.getElementById("left-tracks").innerHTML = left;
-    document.getElementById("right-tracks").innerHTML = right;
+  // Ajouter le fond
+  const cover = document.getElementById("cover-image");
+  if(bgFile){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      cover.style.background = `url(${e.target.result}) center/cover no-repeat`;
+      cover.style.color = 'white';
+    }
+    reader.readAsDataURL(bgFile);
+  } else {
+    // Couleur aléatoire si pas d'image
+    const colors = ['#e63946','#f1faee','#a8dadc','#457b9d','#1d3557','#ffbe0b','#fb5607','#ff006e'];
+    cover.style.background = colors[Math.floor(Math.random() * colors.length)];
+    cover.style.color = 'white';
   }
+}
+
+// Télécharger la cover en PNG
+function downloadCover() {
+  const album = document.getElementById("album");
+  html2canvas(album).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'album-cover.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
 </script>
 
 </body>
