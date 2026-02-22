@@ -2,181 +2,218 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Album Pinterest Style</title>
-
+<title>Minimalist Album Cover Generator</title>
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f5f5f5;
-  padding:20px;
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    padding: 30px;
 }
 
-/* Formulaire */
-form{
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  max-width:400px;
-  margin-bottom:30px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+.controls {
+    width: 300px;
+    margin-right: 40px;
 }
 
-input, textarea{
-  width:100%;
-  margin-bottom:10px;
-  padding:8px;
-  border-radius:8px;
-  border:1px solid #ccc;
+.controls input, .controls textarea, .controls button {
+    width: 100%;
+    margin: 8px 0;
+    padding: 8px;
+    font-size: 14px;
 }
 
-/* Choix couleur */
-.colors{
-  display:flex;
-  gap:10px;
-  margin:10px 0;
+.color-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
 }
 
-.color{
-  width:25px;
-  height:25px;
-  border-radius:50%;
-  cursor:pointer;
-  border:2px solid white;
-  box-shadow:0 0 5px rgba(0,0,0,0.2);
+.color-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
 }
 
-/* Grille style Pinterest */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:20px;
+.album-container {
+    width: 400px;
+    height: 600px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    padding: 10px; /* marge interne pour ne pas toucher les bords */
+    box-sizing: border-box;
 }
 
-/* Carte album */
-.album{
-  border-radius:20px;
-  overflow:hidden;
-  padding:15px;
-  display:flex;
-  flex-direction:column;
-  min-height:340px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.15);
+.cover-image {
+    width: 100%;
+    max-height: 50%; /* moitié du rectangle */
+    aspect-ratio: 1 / 1; /* carré */
+    margin-bottom: 10px; /* espace entre image et texte */
+    border-radius: 5px;
+    overflow: hidden;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Image en haut */
-.cover{
-  width:100%;
-  aspect-ratio:1/1;
-  border-radius:15px;
-  object-fit:cover;
-  margin-bottom:10px;
+.cover-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* Zone texte */
-.info{
-  flex:1;
+.album-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-/* Ligne titre + date */
-.title-row{
-  display:flex;
-  align-items:flex-end;
-  gap:8px;
+.album-title {
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
 }
 
-.album-title{
-  font-size:20px;
-  font-weight:bold;
+.album-artist {
+    font-size: 16px;
+    margin: 0;
+    color: #333;
 }
 
-.date{
-  font-size:12px;
-  opacity:0.7;
+.album-year {
+    font-size: 12px;
+    color: #555;
 }
 
-.artist{
-  font-size:14px;
-  margin-bottom:5px;
+.tracklist {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
-.tracks{
-  font-size:13px;
-  opacity:0.8;
+#left-tracks, #right-tracks {
+    width: 48%;
+}
+
+button {
+    cursor: pointer;
+    background: #111;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #333;
 }
 </style>
 </head>
-
 <body>
 
-<form id="albumForm">
-  <input type="text" id="title" placeholder="Titre de l'album" required>
-  <input type="text" id="artist" placeholder="Chanteur / Groupe" required>
-  <input type="date" id="date" required>
-  <input type="file" id="image" accept="image/png" required>
-  <textarea id="tracks" placeholder="Liste des chansons (facultatif)"></textarea>
+<div class="controls">
+<h2>Créer ton album cover</h2>
+<input id="title" placeholder="Titre de l'album">
+<input id="artist" placeholder="Nom de l'artiste">
+<input id="year" placeholder="Année">
+<textarea id="tracks" placeholder="Liste des chansons, une par ligne (facultatif)"></textarea>
+<input type="file" id="bgImage" accept="image/*">
 
-  <p>Choisir une couleur :</p>
-  <div class="colors">
-    <div class="color" style="background:#ffd6e7" data-color="#ffd6e7"></div>
-    <div class="color" style="background:#d6e4ff" data-color="#d6e4ff"></div>
-    <div class="color" style="background:#e7ffd6" data-color="#e7ffd6"></div>
-    <div class="color" style="background:#fff0d6" data-color="#fff0d6"></div>
-    <div class="color" style="background:#f0d6ff" data-color="#f0d6ff"></div>
-  </div>
+<h4>Choisir la couleur du fond :</h4>
+<div class="color-palette">
+    <div class="color-circle" style="background:#e63946;" onclick="changeBackground('#e63946')"></div>
+    <div class="color-circle" style="background:#f1faee;" onclick="changeBackground('#f1faee')"></div>
+    <div class="color-circle" style="background:#a8dadc;" onclick="changeBackground('#a8dadc')"></div>
+    <div class="color-circle" style="background:#457b9d;" onclick="changeBackground('#457b9d')"></div>
+    <div class="color-circle" style="background:#ffbe0b;" onclick="changeBackground('#ffbe0b')"></div>
+    <div class="color-circle" style="background:#ff006e;" onclick="changeBackground('#ff006e')"></div>
+</div>
 
-  <button type="submit">Ajouter l'album</button>
-</form>
+<button onclick="generate()">Générer la cover</button>
+<button onclick="downloadCover()">Télécharger en PNG</button>
+</div>
 
-<div class="grid" id="albums"></div>
+<div class="album-container" id="album">
+<div class="cover-image" id="cover-image"></div>
+<div class="album-info">
+    <p class="album-title" id="album-title">Titre</p>
+    <p class="album-artist" id="album-artist">Artiste</p>
+    <p class="album-year" id="album-year">2024</p>
+    <div class="tracklist" id="tracklist">
+        <div id="left-tracks"></div>
+        <div id="right-tracks"></div>
+    </div>
+</div>
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-let selectedColor = "#ffd6e7";
+let selectedColor = '#fff';
 
-document.querySelectorAll(".color").forEach(c=>{
-  c.onclick=()=> selectedColor = c.dataset.color;
-});
+function changeBackground(color) {
+    selectedColor = color;
+    document.getElementById("album").style.background = selectedColor;
+}
 
-document.getElementById("albumForm").addEventListener("submit", function(e){
-  e.preventDefault();
+function generate() {
+    const title = document.getElementById("title").value || "Titre";
+    const artist = document.getElementById("artist").value || "Artiste";
+    const year = document.getElementById("year").value || "2024";
+    const tracks = document.getElementById("tracks").value.split('\n').filter(t => t.trim() !== '');
+    const bgFile = document.getElementById("bgImage").files[0];
 
-  const title = document.getElementById("title").value;
-  const artist = document.getElementById("artist").value;
-  const date = document.getElementById("date").value;
-  const tracks = document.getElementById("tracks").value;
-  const imageFile = document.getElementById("image").files[0];
+    if (!bgFile) {
+        alert("L'image de fond est obligatoire !");
+        return;
+    }
 
-  if(!imageFile || imageFile.type !== "image/png"){
-    alert("Image PNG obligatoire !");
-    return;
-  }
+    document.getElementById("album-title").innerText = title;
+    document.getElementById("album-artist").innerText = artist;
+    document.getElementById("album-year").innerText = year;
 
-  const reader = new FileReader();
-  reader.onload = function(event){
+    const leftTracks = document.getElementById("left-tracks");
+    const rightTracks = document.getElementById("right-tracks");
+    if (tracks.length > 0) {
+        const middle = Math.ceil(tracks.length / 2);
+        leftTracks.innerHTML = tracks.slice(0, middle).join('<br>');
+        rightTracks.innerHTML = tracks.slice(middle).join('<br>');
+    } else {
+        leftTracks.innerHTML = '';
+        rightTracks.innerHTML = '';
+    }
 
-    const album = document.createElement("div");
-    album.className = "album";
-    album.style.background = selectedColor;
+    const coverDiv = document.getElementById("cover-image");
+    coverDiv.innerHTML = '';
+    const reader = new FileReader();
+    reader.onload = function(e){
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        coverDiv.appendChild(img);
+    }
+    reader.readAsDataURL(bgFile);
+}
 
-    album.innerHTML = `
-      <img src="${event.target.result}" class="cover">
-
-      <div class="info">
-        <div class="title-row">
-          <div class="album-title">${title}</div>
-          <div class="date">${date}</div>
-        </div>
-
-        <div class="artist">${artist}</div>
-
-        ${tracks ? `<div class="tracks">${tracks.replace(/\n/g,"<br>")}</div>` : ""}
-      </div>
-    `;
-
-    document.getElementById("albums").appendChild(album);
-  };
-
-  reader.readAsDataURL(imageFile);
-});
+function downloadCover() {
+    html2canvas(document.getElementById("album")).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'album-cover.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
 </script>
 
 </body>
