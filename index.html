@@ -45,7 +45,7 @@ body {
   width:400px;
   height:650px;
   background:#fff;
-  border-radius:15px;
+  border-radius:0; /* Coins pointus */
   overflow:hidden;
   box-shadow:0 4px 12px rgba(0,0,0,0.2);
   padding:10px;
@@ -57,7 +57,7 @@ body {
 .cover-image {
   width:100%;
   height:50%;
-  border-radius:10px;
+  border-radius:0; /* Coins pointus */
   overflow:hidden;
   background:#111;
   margin-bottom:10px;
@@ -233,11 +233,10 @@ function generate(){
   }
 }
 
-// Nouvelle fonction downloadCover() corrigée
+// Fonction downloadCover() corrigée
 function downloadCover() {
   const album = document.getElementById("album");
 
-  // Cloner l'album
   const clone = album.cloneNode(true);
   clone.style.transform = 'scale(1)';
   clone.style.boxShadow = 'none';
@@ -245,7 +244,7 @@ function downloadCover() {
   clone.style.top = '-10000px';
   clone.style.left = '-10000px';
 
-  document.body.appendChild(clone); // ajouter au DOM
+  document.body.appendChild(clone);
 
   html2canvas(clone, {
     scale: 3,
@@ -257,7 +256,7 @@ function downloadCover() {
     link.download = 'album-cover.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
-    document.body.removeChild(clone); // nettoyer le clone
+    document.body.removeChild(clone);
   });
 }
 </script>
