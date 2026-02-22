@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Album Pinterest Style</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
-<!-- Google Fonts gratuites -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Montserrat&family=Lobster&family=Open+Sans&display=swap" rel="stylesheet">
 <style>
 body { font-family: Arial, sans-serif; background:#f5f5f5; display:flex; justify-content:center; padding:20px; }
@@ -35,6 +34,7 @@ button:hover { background:#333; }
   <input id="title" placeholder="Titre de l'album (obligatoire)" required>
   <input id="artist" placeholder="Nom de l'artiste (facultatif)">
   <input id="year" placeholder="Année (facultatif)">
+  
   <textarea id="tracks" placeholder="Liste des chansons en deux colonnes (facultatif)"></textarea>
   <label>Taille texte liste chansons:</label>
   <input type="number" id="tracks-size" value="14" min="8" max="50">
@@ -72,14 +72,16 @@ button:hover { background:#333; }
     <div class="color-circle" style="background:#ffbe0b" onclick="changeBackground('#ffbe0b')"></div>
     <div class="color-circle" style="background:#ff006e" onclick="changeBackground('#ff006e')"></div>
     <label style="display:flex; align-items:center; gap:5px; font-size:14px;">
-      Choisir n'importe quelle couleur :
-      <input type="color" id="fullColorPicker" value="#ffffff" 
-             onchange="changeBackground(this.value)" style="cursor:pointer; width:40px; height:30px; border:none; padding:0;">
+      Couleur personnalisée :
+      <input type="color" id="fullColorPicker" value="#ffffff" onchange="changeBackground(this.value)" style="cursor:pointer; width:40px; height:30px; border:none; padding:0;">
     </label>
   </div>
 
-  <label>Arrondir les angles (px) :</label>
-  <input type="range" id="border-radius" min="0" max="100" value="0" oninput="updateBorderRadius(this.value)">
+  <label>Arrondi du rectangle du cover (px) :</label>
+  <input type="range" id="border-radius-album" min="0" max="100" value="0" oninput="updateBorderRadiusAlbum(this.value)">
+  
+  <label>Arrondi du carré image (px) :</label>
+  <input type="range" id="border-radius-image" min="0" max="100" value="0" oninput="updateBorderRadiusImage(this.value)">
 
   <button onclick="generate()">Générer la cover</button>
   <button id="finish-crop" onclick="finishCrop()" style="display:none;">Terminé de rogner</button>
@@ -113,8 +115,11 @@ function changeBackground(color){
   document.getElementById("album").style.background=selectedColor;
 }
 
-function updateBorderRadius(value){
+function updateBorderRadiusAlbum(value){
   document.getElementById("album").style.borderRadius = value + "px";
+}
+
+function updateBorderRadiusImage(value){
   document.getElementById("cover-image").style.borderRadius = value + "px";
 }
 
