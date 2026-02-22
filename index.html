@@ -53,7 +53,8 @@ button:hover { background:#333; }
   </div>
 
   <button onclick="generate()">Générer la cover</button>
-  <button id="final-download" onclick="downloadCover()" style="display:none;">Terminé de rogner & Télécharger</button>
+  <button id="finish-crop" onclick="finishCrop()" style="display:none;">Terminé de rogner</button>
+  <button onclick="downloadCover()">Télécharger en PNG</button>
 </div>
 
 <div class="album-container" id="album">
@@ -116,7 +117,7 @@ function generate(){
       img.src = e.target.result;
       coverDiv.appendChild(img);
 
-      // Ajouter message "Déplacez et zoomez"
+      // Ajouter message
       const msg = document.createElement('div');
       msg.className='cropper-message';
       msg.innerText='Déplacez et zoomez votre image, puis cliquez sur Terminé de rogner';
@@ -133,13 +134,14 @@ function generate(){
         dragMode: 'move'
       });
 
-      document.getElementById("final-download").style.display = "inline-block";
+      document.getElementById("finish-crop").style.display='inline-block';
     }
     reader.readAsDataURL(bgFile);
   } else { coverDiv.style.background = selectedColor; }
 }
 
-function downloadCover(){
+// Bloquer le cropper après "Terminé de rogner"
+function finishCrop(){
   if(cropperInstance){
     const croppedCanvas = cropperInstance.getCroppedCanvas();
     const coverDiv = document.getElementById("cover-image");
@@ -151,11 +153,15 @@ function downloadCover(){
     cropperInstance.destroy();
     cropperInstance = null;
 
-    // Supprimer le message
+    // Supprimer message
     const msg = coverDiv.querySelector('.cropper-message');
     if(msg) msg.remove();
-  }
 
+    document.getElementById("finish-crop").style.display='none';
+  }
+}
+
+function downloadCover(){
   const album = document.getElementById("album");
   const clone = album.cloneNode(true);
   clone.style.transform='scale(1)'; clone.style.boxShadow='none';
