@@ -2,68 +2,263 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Rogner et déplacer l'image</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+<title>Album Pinterest Style</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
-  .container {
-    max-width: 400px;
-    margin-bottom: 20px;
-  }
-  img {
-    max-width: 100%;
-    display: block;
-  }
-  button {
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-  }
+body {
+  font-family: Arial, sans-serif;
+  background:#f5f5f5;
+  display:flex;
+  justify-content:center;
+  padding:20px;
+}
+
+.controls {
+  width:300px;
+  margin-right:40px;
+}
+
+.controls input, .controls textarea, .controls button {
+  width:100%;
+  margin:8px 0;
+  padding:8px;
+  font-size:14px;
+}
+
+.color-palette {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:8px 0;
+  align-items:center;
+}
+
+.color-circle {
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  cursor:pointer;
+  border:2px solid white;
+  box-shadow:0 0 2px rgba(0,0,0,0.5);
+}
+
+.album-container {
+  width:400px;
+  height:650px;
+  background:#fff;
+  border-radius:0; /* Coins pointus */
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  padding:10px;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+}
+
+.cover-image {
+  width:100%;
+  height:50%;
+  border-radius:0; /* Coins pointus */
+  overflow:hidden;
+  background:#111;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.cover-image img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.album-info {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.title-row {
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+}
+
+.album-title {
+  font-size:32px;
+  font-weight:bold;
+  text-transform:uppercase;
+}
+
+.date {
+  font-size:14px;
+  opacity:0.7;
+}
+
+.album-artist {
+  font-size:16px;
+  color:#333;
+}
+
+.tracklist {
+  font-size:14px;
+  opacity:0.8;
+  display:flex;
+  justify-content:space-between;
+}
+
+#left-tracks, #right-tracks {
+  width:48%;
+}
+
+#single-column {
+  width:100%;
+  margin-top:5px;
+  font-size:14px;
+  opacity:0.8;
+}
+
+button {
+  cursor:pointer;
+  background:#111;
+  color:white;
+  border:none;
+  border-radius:5px;
+}
+
+button:hover {
+  background:#333;
+}
 </style>
 </head>
 <body>
 
-<h2>Déplacer, zoomer et rogner votre image</h2>
+<div class="controls">
+  <h2>Créer ton album cover</h2>
+  <input id="title" placeholder="Titre de l'album (obligatoire)" required>
+  <input id="artist" placeholder="Nom de l'artiste (facultatif)">
+  <input id="year" placeholder="Année (facultatif)">
+  <textarea id="tracks" placeholder="Liste des chansons en deux colonnes (facultatif)"></textarea>
+  <textarea id="singleText" placeholder="Texte en une seule colonne (facultatif)"></textarea>
+  
+  <input type="file" id="bgImage" accept="image/png, image/jpeg, image/jpg">
 
-<div class="container">
-  <img id="image" src="pnj.png" alt="Image à rogner">
+  <h4>Choisir la couleur du fond :</h4>
+  <div class="color-palette">
+    <div class="color-circle" style="background:#e63946" onclick="changeBackground('#e63946')"></div>
+    <div class="color-circle" style="background:#f1faee" onclick="changeBackground('#f1faee')"></div>
+    <div class="color-circle" style="background:#a8dadc" onclick="changeBackground('#a8dadc')"></div>
+    <div class="color-circle" style="background:#457b9d" onclick="changeBackground('#457b9d')"></div>
+    <div class="color-circle" style="background:#ffbe0b" onclick="changeBackground('#ffbe0b')"></div>
+    <div class="color-circle" style="background:#ff006e" onclick="changeBackground('#ff006e')"></div>
+    <label style="display:flex; align-items:center; gap:5px; font-size:14px;">
+      Choisir n'importe quelle couleur :
+      <input type="color" id="fullColorPicker" value="#ffffff" 
+             onchange="changeBackground(this.value)" style="cursor:pointer; width:40px; height:30px; border:none; padding:0;">
+    </label>
+  </div>
+
+  <button onclick="generate()">Générer la cover</button>
+  <button onclick="downloadCover()">Télécharger en PNG</button>
 </div>
 
-<button id="download">Télécharger l'image rognée</button>
+<div class="album-container" id="album">
+  <div class="cover-image" id="cover-image"></div>
+  <div class="album-info">
+    <div class="title-row">
+      <div class="album-title" id="album-title">Titre</div>
+      <div class="date" id="album-year"></div>
+    </div>
+    <div class="album-artist" id="album-artist"></div>
+    <div class="tracklist">
+      <div id="left-tracks"></div>
+      <div id="right-tracks"></div>
+    </div>
+    <div id="single-column"></div>
+  </div>
+</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-  const image = document.getElementById('image');
+let selectedColor = '#fff';
 
-  // Initialiser Cropper
-  const cropper = new Cropper(image, {
-    viewMode: 1,
-    dragMode: 'move', // permet de déplacer l'image dans le cadre
-    autoCropArea: 0.8,
-    movable: true,
-    zoomable: true,
-    rotatable: true,
-    scalable: true
+function changeBackground(color){
+  selectedColor=color;
+  document.getElementById("album").style.background=selectedColor;
+}
+
+function generate(){
+  const title = document.getElementById("title").value.trim();
+  if(!title){
+    alert("Le titre de l'album est obligatoire !");
+    return;
+  }
+
+  const artist = document.getElementById("artist").value.trim();
+  const year = document.getElementById("year").value.trim();
+  const tracks = document.getElementById("tracks").value.split('\n').filter(t=>t.trim()!=="");
+  const singleText = document.getElementById("singleText").value.trim();
+  const bgFile = document.getElementById("bgImage").files[0];
+
+  document.getElementById("album-title").innerText = title;
+  document.getElementById("album-artist").innerText = artist || '';
+  document.getElementById("album-year").innerText = year || '';
+
+  const leftTracks = document.getElementById("left-tracks");
+  const rightTracks = document.getElementById("right-tracks");
+  if(tracks.length>0){
+    const middle = Math.ceil(tracks.length/2);
+    leftTracks.innerHTML = tracks.slice(0,middle).join('<br>');
+    rightTracks.innerHTML = tracks.slice(middle).join('<br>');
+  } else {
+    leftTracks.innerHTML = '';
+    rightTracks.innerHTML = '';
+  }
+
+  document.getElementById("single-column").innerHTML = singleText || '';
+
+  const coverDiv = document.getElementById("cover-image");
+  coverDiv.innerHTML='';
+  if(bgFile && bgFile.type.startsWith("image/")){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      coverDiv.appendChild(img);
+    }
+    reader.readAsDataURL(bgFile);
+  } else {
+    coverDiv.style.background = selectedColor;
+  }
+}
+
+// Fonction downloadCover() corrigée
+function downloadCover() {
+  const album = document.getElementById("album");
+
+  const clone = album.cloneNode(true);
+  clone.style.transform = 'scale(1)';
+  clone.style.boxShadow = 'none';
+  clone.style.position = 'absolute';
+  clone.style.top = '-10000px';
+  clone.style.left = '-10000px';
+
+  document.body.appendChild(clone);
+
+  html2canvas(clone, {
+    scale: 3,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: null
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'album-cover.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    document.body.removeChild(clone);
   });
-
-  document.getElementById('download').addEventListener('click', () => {
-    // Récupérer l'image rognée
-    const croppedCanvas = cropper.getCroppedCanvas({
-      width: 400,
-      height: 400
-    });
-
-    croppedCanvas.toBlob(blob => {
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'image_rognee.png';
-      link.click();
-    }, 'image/png');
-  });
+}
 </script>
-
 </body>
 </html>
