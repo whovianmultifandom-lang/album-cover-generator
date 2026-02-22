@@ -84,15 +84,14 @@ body {
   gap:8px;
 }
 
-/* Titre de l’album : majuscules, plus gros, gras */
 .album-title {
-  font-size:32px; /* plus gros */
-  font-weight:bold; /* gras */
-  text-transform:uppercase; /* majuscule */
+  font-size:32px;
+  font-weight:bold;
+  text-transform:uppercase;
 }
 
 .date {
-  font-size:14px; /* petite date à côté */
+  font-size:14px;
   opacity:0.7;
 }
 
@@ -129,13 +128,13 @@ button:hover {
 
 <div class="controls">
   <h2>Créer ton album cover</h2>
-  <input id="title" placeholder="Titre de l'album">
-  <input id="artist" placeholder="Nom de l'artiste">
-  <input id="year" placeholder="Année">
+  <input id="title" placeholder="Titre de l'album" required>
+  <input id="artist" placeholder="Nom de l'artiste (facultatif)">
+  <input id="year" placeholder="Année (facultatif)">
   <textarea id="tracks" placeholder="Liste des chansons, une par ligne (facultatif)"></textarea>
   
-  <!-- Image acceptant PNG, JPEG et JPG -->
-  <input type="file" id="bgImage" accept="image/png, image/jpeg, image/jpg" required>
+  <!-- Image facultative -->
+  <input type="file" id="bgImage" accept="image/png, image/jpeg, image/jpg">
 
   <h4>Choisir la couleur du fond :</h4>
   <div class="color-palette">
@@ -159,9 +158,9 @@ button:hover {
   <div class="album-info">
     <div class="title-row">
       <div class="album-title" id="album-title">Titre</div>
-      <div class="date" id="album-year">2024</div>
+      <div class="date" id="album-year"></div>
     </div>
-    <div class="album-artist" id="album-artist">Artiste</div>
+    <div class="album-artist" id="album-artist"></div>
     <div class="tracklist">
       <div id="left-tracks"></div>
       <div id="right-tracks"></div>
@@ -179,42 +178,50 @@ function changeBackground(color){
 }
 
 function generate(){
-  const title=document.getElementById("title").value||"Titre";
-  const artist=document.getElementById("artist").value||"Artiste";
-  const year=document.getElementById("year").value||"2024";
-  const tracks=document.getElementById("tracks").value.split('\n').filter(t=>t.trim()!=="");
-  const bgFile=document.getElementById("bgImage").files[0];
-
-  // Vérification : fichier image valide (PNG, JPEG, JPG)
-  if(!bgFile || !bgFile.type.startsWith("image/")){
-    alert("Veuillez sélectionner un fichier image valide (PNG, JPEG ou JPG) !");
+  const title = document.getElementById("title").value.trim();
+  if(!title){
+    alert("Le titre de l'album est obligatoire !");
     return;
   }
 
-  document.getElementById("album-title").innerText=title;
-  document.getElementById("album-artist").innerText=artist;
-  document.getElementById("album-year").innerText=year;
+  const artist = document.getElementById("artist").value.trim();
+  const year = document.getElementById("year").value.trim();
+  const tracks = document.getElementById("tracks").value.split('\n').filter(t=>t.trim()!=="");
+  const bgFile = document.getElementById("bgImage").files[0];
 
+  document.getElementById("album-title").innerText = title;
+
+  // Afficher artiste et année uniquement si renseignés
+  document.getElementById("album-artist").innerText = artist || '';
+  document.getElementById("album-year").innerText = year || '';
+
+  // Gestion des pistes
   const leftTracks=document.getElementById("left-tracks");
   const rightTracks=document.getElementById("right-tracks");
   if(tracks.length>0){
     const middle=Math.ceil(tracks.length/2);
-    leftTracks.innerHTML=tracks.slice(0,middle).join('<br>');
-    rightTracks.innerHTML=tracks.slice(middle).join('<br>');
-  }else{
-    leftTracks.innerHTML='';
-    rightTracks.innerHTML='';
+    leftTracks.innerHTML = tracks.slice(0,middle).join('<br>');
+    rightTracks.innerHTML = tracks.slice(middle).join('<br>');
+  } else {
+    leftTracks.innerHTML = '';
+    rightTracks.innerHTML = '';
   }
 
+  // Gestion image
   const coverDiv=document.getElementById("cover-image");
   coverDiv.innerHTML='';
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const img=document.createElement('img');
-    img.src=e.target.result;
-    coverDiv.appendChild(img);
+  if(bgFile && bgFile.type.startsWith("image/")){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img=document.createElement('img');
+      img.src = e.target.result;
+      coverDiv.appendChild(img);
+    }
+    reader.readAsDataURL(bgFile);
+  } else {
+    // Si pas d'image, juste fond coloré
+    coverDiv.style.background = selectedColor;
   }
-  reader.readAsDataURL(bgFile);
 }
 
 function downloadCover(){
