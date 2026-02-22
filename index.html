@@ -24,6 +24,22 @@
     font-size: 14px;
   }
 
+  .color-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+  }
+
+  .color-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+  }
+
   .album-container {
     width: 400px;
     height: 600px;
@@ -33,16 +49,23 @@
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 0.5cm;
+    box-sizing: border-box;
+    position: relative;
   }
 
   .cover-image {
-    width: 100%;
-    height: 50%;
+    width: 50%;
+    aspect-ratio: 1 / 1;
+    position: absolute;
+    top: 0.5cm;
+    left: 0.5cm;
+    border-radius: 5px;
+    overflow: hidden;
     background: #111;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
   }
 
   .cover-image img {
@@ -52,23 +75,27 @@
   }
 
   .album-info {
-    padding: 20px;
-    flex: 1;
+    position: absolute;
+    top: 0.5cm;
+    left: calc(50% + 1cm); /* à droite de l'image */
+    width: calc(50% - 1.5cm);
+    height: calc(50% - 0.5cm);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 10px;
+    gap: 5px;
+    padding: 5px;
   }
 
   .album-title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
     text-transform: uppercase;
     margin: 0;
   }
 
   .album-artist {
-    font-size: 18px;
+    font-size: 16px;
     margin: 0;
     color: #333;
   }
@@ -81,9 +108,9 @@
   .tracklist {
     display: flex;
     justify-content: space-between;
-    font-size: 14px;
+    font-size: 12px;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 5px;
   }
 
   #left-tracks, #right-tracks {
@@ -113,13 +140,24 @@
   <input id="year" placeholder="Année">
   <textarea id="tracks" placeholder="Liste des chansons, une par ligne (facultatif)"></textarea>
   <input type="file" id="bgImage" accept="image/*">
+  
+  <h4>Choisir la couleur du fond :</h4>
+  <div class="color-palette">
+    <div class="color-circle" style="background:#e63946;" onclick="changeBackground('#e63946')"></div>
+    <div class="color-circle" style="background:#f1faee;" onclick="changeBackground('#f1faee')"></div>
+    <div class="color-circle" style="background:#a8dadc;" onclick="changeBackground('#a8dadc')"></div>
+    <div class="color-circle" style="background:#457b9d;" onclick="changeBackground('#457b9d')"></div>
+    <div class="color-circle" style="background:#ffbe0b;" onclick="changeBackground('#ffbe0b')"></div>
+    <div class="color-circle" style="background:#ff006e;" onclick="changeBackground('#ff006e')"></div>
+  </div>
+
   <button onclick="generate()">Générer la cover</button>
   <button onclick="downloadCover()">Télécharger en PNG</button>
 </div>
 
 <div class="album-container" id="album">
   <div class="cover-image" id="cover-image">
-    <!-- Image obligatoire -->
+    <!-- L'image sera insérée ici -->
   </div>
   <div class="album-info">
     <p class="album-title" id="album-title">Titre</p>
@@ -134,6 +172,13 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
+let selectedColor = '#fff';
+
+function changeBackground(color) {
+  selectedColor = color;
+  document.getElementById("album").style.background = selectedColor;
+}
+
 function generate() {
   const title = document.getElementById("title").value || "Titre";
   const artist = document.getElementById("artist").value || "Artiste";
@@ -146,12 +191,10 @@ function generate() {
     return;
   }
 
-  // Mettre à jour le texte
   document.getElementById("album-title").innerText = title;
   document.getElementById("album-artist").innerText = artist;
   document.getElementById("album-year").innerText = year;
 
-  // Gérer les chansons si présentes
   const leftTracks = document.getElementById("left-tracks");
   const rightTracks = document.getElementById("right-tracks");
   if (tracks.length > 0) {
@@ -163,9 +206,8 @@ function generate() {
     rightTracks.innerHTML = '';
   }
 
-  // Ajouter l'image obligatoire
   const coverDiv = document.getElementById("cover-image");
-  coverDiv.innerHTML = ''; // vider l'ancien contenu
+  coverDiv.innerHTML = '';
   const reader = new FileReader();
   reader.onload = function(e){
     const img = document.createElement('img');
