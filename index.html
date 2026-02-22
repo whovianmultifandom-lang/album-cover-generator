@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta charset="UTF-8">
 <title>Minimalist Album Cover Generator</title>
 <style>
   body {
@@ -44,22 +45,19 @@
     width: 400px;
     height: 600px;
     background: #fff;
-    display: flex;
-    flex-direction: column;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    padding: 0.5cm;
+    display: flex;
+    flex-direction: column;
+    padding: 1cm; /* marge de 1 cm autour */
     box-sizing: border-box;
-    position: relative;
   }
 
   .cover-image {
-    width: 50%;
-    aspect-ratio: 1 / 1;
-    position: absolute;
-    top: 0.5cm;
-    left: 0.5cm;
+    width: calc(100% - 2cm); /* laisse 1cm de marge à gauche et droite */
+    height: calc(50% - 1cm); /* moitié du rectangle moins marge */
+    margin-bottom: 1cm; /* espace entre l'image et le texte */
     border-radius: 5px;
     overflow: hidden;
     background: #111;
@@ -75,16 +73,10 @@
   }
 
   .album-info {
-    position: absolute;
-    top: 0.5cm;
-    left: calc(50% + 1cm); /* à droite de l'image */
-    width: calc(50% - 1.5cm);
-    height: calc(50% - 0.5cm);
+    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     gap: 5px;
-    padding: 5px;
   }
 
   .album-title {
