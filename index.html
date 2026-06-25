@@ -30,7 +30,7 @@ body{
     align-items:center;
 }
 
-/* couleurs */
+/* couleurs rapides */
 .color{
     width:26px;
     height:26px;
@@ -60,7 +60,6 @@ body{
 #text{
     font-size:45px;
     letter-spacing:2px;
-    color:black;
 }
 
 /* ✏️ INPUT */
@@ -71,17 +70,16 @@ body{
     transform:translateX(-50%);
 }
 
-input{
+input[type="text"]{
     width:600px;
     padding:16px;
     border-radius:30px;
     border:2px solid black;
     font-size:18px;
     text-align:center;
-    outline:none;
 }
 
-input:focus{
+input[type="text"]:focus{
     background:black;
     color:#b9ff00;
 }
@@ -114,8 +112,8 @@ input:focus{
     font-size:10px;
 }
 
-/* 🧾 HEX INPUTS */
-.hex-panel{
+/* 🎛 COLOR PICKERS */
+.pickers{
     position:absolute;
     top:20px;
     right:20px;
@@ -125,13 +123,8 @@ input:focus{
     align-items:flex-end;
 }
 
-.hex-panel input{
-    width:120px;
-    padding:6px;
-    font-size:12px;
-    border-radius:10px;
-    border:1px solid black;
-    text-align:center;
+.pickers label{
+    font-size:10px;
 }
 </style>
 
@@ -139,7 +132,7 @@ input:focus{
 
 <body>
 
-<!-- 🎨 COLORS -->
+<!-- 🎨 COLORS QUICK -->
 <div class="top">
 
     <div class="color" style="background:white" onclick="changeColor('white')"></div>
@@ -159,13 +152,17 @@ input:focus{
 
 </div>
 
-<!-- 🧾 HEX CONTROLS -->
-<div class="hex-panel">
+<!-- 🎛 COLOR PICKERS -->
+<div class="pickers">
 
-    <input id="textColor" placeholder="text #hex" oninput="setTextColor()">
+    <div>
+        <label>text</label><br>
+        <input type="color" oninput="setTextColor(this.value)">
+    </div>
 
-    <div style="display:flex; gap:5px; align-items:center;">
-        <input id="bgColor" placeholder="bg #hex" oninput="setBgColor()">
+    <div>
+        <label>background</label><br>
+        <input type="color" oninput="setBgColor(this.value)">
     </div>
 
 </div>
@@ -181,7 +178,7 @@ input:focus{
 
 <!-- ✏️ INPUT -->
 <div class="input-box">
-<input id="input"
+<input type="text" id="input"
 value="you seem pretty sad for a girl so in love"
 oninput="updateText()">
 </div>
@@ -196,7 +193,7 @@ function updateText(){
     document.getElementById("text").innerText = v.toLowerCase();
 }
 
-/* couleur boutons */
+/* couleurs rapides */
 function changeColor(c){
     document.body.style.background = c;
 }
@@ -208,15 +205,12 @@ function toggleBlur(){
         blurOn ? "blur(1.2px)" : "blur(0px)";
 }
 
-/* 🎨 texte color hex */
-function setTextColor(){
-    let c = document.getElementById("textColor").value;
+/* 🎨 pickers */
+function setTextColor(c){
     document.getElementById("text").style.color = c;
 }
 
-/* 🎨 background hex */
-function setBgColor(){
-    let c = document.getElementById("bgColor").value;
+function setBgColor(c){
     document.body.style.background = c;
 }
 
