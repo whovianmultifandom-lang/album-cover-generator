@@ -38,7 +38,7 @@ body{
     cursor:pointer;
 }
 
-/* 🧠 TEXT */
+/* 🧠 CENTER */
 .center{
     height:100vh;
     display:flex;
@@ -46,10 +46,22 @@ body{
     align-items:center;
 }
 
-.preview{
-    font-size:80px;
+/* 🟩 CARRÉ BRAT */
+.square{
+    width:450px;
+    height:450px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
     text-align:center;
-    max-width:900px;
+    padding:20px;
+
+    border:2px solid black;
+}
+
+/* texte */
+.preview{
+    font-size:45px;
     letter-spacing:2px;
 }
 
@@ -92,8 +104,10 @@ input:focus{
 
 <!-- 🧠 TEXT -->
 <div class="center">
-    <div class="preview" id="text">
-        you seem pretty sad for a girl so in love
+    <div class="square">
+        <div class="preview" id="text">
+            you seem pretty sad for a girl so in love
+        </div>
     </div>
 </div>
 
@@ -109,14 +123,13 @@ oninput="updateText()">
 
 function updateText(){
     let value = document.getElementById("input").value;
-
-    // pas de saut de ligne par mot (BRAT correct)
     document.getElementById("text").innerText = value.toLowerCase();
 }
 
 function changeColor(color){
     document.body.style.background = color;
 }
+
 </script>
 
 </body>
