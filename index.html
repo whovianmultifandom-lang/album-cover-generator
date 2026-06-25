@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -22,7 +21,7 @@ body{
     transition: background 0.3s ease;
 }
 
-/* 🎨 TOP BAR */
+/* 🎨 TOP */
 .top{
     position:absolute;
     top:20px;
@@ -32,13 +31,18 @@ body{
     align-items:center;
 }
 
-.color, .toggle{
+/* couleurs */
+.color{
     width:26px;
     height:26px;
     border-radius:50%;
     border:2px solid black;
     cursor:pointer;
-    position:relative;
+}
+
+/* noir avec texte blanc */
+.color.black{
+    background:black;
 }
 
 /* 🧠 CENTER */
@@ -88,16 +92,37 @@ input:focus{
     color:#b9ff00;
 }
 
-/* ❌ BARRE (flou OFF visuel) */
-.cross::after{
-    content:"";
-    position:absolute;
-    width:100%;
-    height:2px;
-    background:black;
-    top:50%;
-    left:0;
-    transform:rotate(45deg);
+/* 🎛 BLUR BUTTON */
+.toggle-wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+}
+
+/* bouton rond */
+.toggle{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    border:2px solid black;
+    cursor:pointer;
+    background:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:bold;
+    font-size:14px;
+}
+
+/* A flouté */
+.blur-letter{
+    filter: blur(2px);
+}
+
+/* texte sous bouton */
+.label{
+    font-size:10px;
 }
 </style>
 
@@ -114,8 +139,16 @@ input:focus{
     <div class="color" style="background:#00c853" onclick="changeColor('#00c853')"></div>
     <div class="color" style="background:#0057ff" onclick="changeColor('#0057ff')"></div>
 
-    <!-- 🎛 FLU BUTTON -->
-    <div id="blurBtn" class="toggle" style="background:black" onclick="toggleBlur()"></div>
+    <!-- ⚫ NOIR -->
+    <div class="color black" onclick="changeColor('black')"></div>
+
+    <!-- 🌫 BLUR -->
+    <div class="toggle-wrapper">
+        <div id="blurBtn" class="toggle" onclick="toggleBlur()">
+            <span class="blur-letter">A</span>
+        </div>
+        <div class="label">blur</div>
+    </div>
 
 </div>
 
@@ -145,29 +178,26 @@ function updateText(){
     document.getElementById("text").innerText = value.toLowerCase();
 }
 
-/* 🎨 COULEURS */
 function changeColor(color){
     document.body.style.background = color;
 }
 
-/* 🌫 FLU TOGGLE */
+/* 🌫 TOGGLE BLUR */
 function toggleBlur(){
     blurEnabled = !blurEnabled;
 
-    const btn = document.getElementById("blurBtn");
     const text = document.getElementById("text");
 
     if(blurEnabled){
         text.style.filter = "blur(1px)";
-        btn.classList.remove("cross");
     } else {
         text.style.filter = "blur(0px)";
-        btn.classList.add("cross");
     }
 }
 
 /* état initial */
-document.getElementById("text").style.filter = "blur(1px)";
+document.getElementById("text").style.filter = "blur(1px");
+
 </script>
 
 </body>
