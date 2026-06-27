@@ -39,7 +39,9 @@ body{
     cursor:pointer;
 }
 
-.black{ background:black; }
+.black{
+    background:black;
+}
 
 /* 🧠 CENTRE */
 .center{
@@ -57,9 +59,13 @@ body{
     align-items:center;
 }
 
+/* TEXTE */
 #text{
     font-size:45px;
     letter-spacing:2px;
+    white-space:pre-wrap;
+    word-spacing:10px;
+    text-align:center;
 }
 
 /* ✏️ INPUT */
@@ -70,16 +76,18 @@ body{
     transform:translateX(-50%);
 }
 
-input[type="text"]{
+textarea{
     width:600px;
+    height:100px;
     padding:16px;
     border-radius:30px;
     border:2px solid black;
     font-size:18px;
     text-align:center;
+    resize:none;
 }
 
-input[type="text"]:focus{
+textarea:focus{
     background:black;
     color:#b9ff00;
 }
@@ -105,7 +113,7 @@ input[type="text"]:focus{
 }
 
 .blur-letter{
-    filter: blur(2px);
+    filter:blur(2px);
 }
 
 .label{
@@ -126,31 +134,44 @@ input[type="text"]:focus{
 .pickers label{
     font-size:10px;
 }
+
 </style>
 
 </head>
 
 <body>
 
+
 <!-- 🎨 COLORS QUICK -->
 <div class="top">
 
     <div class="color" style="background:white" onclick="changeColor('white')"></div>
+
     <div class="color" style="background:#ffb6d9" onclick="changeColor('#ffb6d9')"></div>
+
     <div class="color" style="background:#ffe600" onclick="changeColor('#ffe600')"></div>
+
     <div class="color" style="background:#00c853" onclick="changeColor('#00c853')"></div>
+
     <div class="color" style="background:#0057ff" onclick="changeColor('#0057ff')"></div>
+
     <div class="color black" onclick="changeColor('black')"></div>
+
 
     <!-- 🌫 BLUR -->
     <div class="blur-wrapper">
+
         <div class="blur-btn" onclick="toggleBlur()">
             <span class="blur-letter">A</span>
         </div>
+
         <div class="label">blur</div>
+
     </div>
 
 </div>
+
+
 
 <!-- 🎛 COLOR PICKERS -->
 <div class="pickers">
@@ -160,6 +181,7 @@ input[type="text"]:focus{
         <input type="color" oninput="setTextColor(this.value)">
     </div>
 
+
     <div>
         <label>background</label><br>
         <input type="color" oninput="setBgColor(this.value)">
@@ -167,54 +189,90 @@ input[type="text"]:focus{
 
 </div>
 
+
+
+
 <!-- 🧠 TEXT -->
 <div class="center">
+
     <div class="square">
+
         <div id="text">
-            you seem pretty sad for a girl so in love
+you seem pretty sad for a girl so in love
         </div>
+
     </div>
+
 </div>
+
+
 
 <!-- ✏️ INPUT -->
 <div class="input-box">
-<input type="text" id="input"
-value="you seem pretty sad for a girl so in love"
-oninput="updateText()">
+
+<textarea id="input" oninput="updateText()">you seem pretty sad for a girl so in love</textarea>
+
 </div>
+
+
+
 
 <script>
 
 let blurOn = false;
 
+
 /* texte */
 function updateText(){
+
     let v = document.getElementById("input").value;
-    document.getElementById("text").innerText = v.toLowerCase();
+
+    document.getElementById("text").textContent = v.toLowerCase();
+
 }
+
+
 
 /* couleurs rapides */
 function changeColor(c){
+
     document.body.style.background = c;
+
 }
+
+
 
 /* blur */
 function toggleBlur(){
+
     blurOn = !blurOn;
+
     document.getElementById("text").style.filter =
-        blurOn ? "blur(1.2px)" : "blur(0px)";
+    blurOn ? "blur(1.2px)" : "blur(0px)";
+
 }
 
-/* 🎨 pickers */
+
+
+/* couleur texte */
 function setTextColor(c){
+
     document.getElementById("text").style.color = c;
+
 }
 
+
+
+/* couleur fond */
 function setBgColor(c){
+
     document.body.style.background = c;
+
 }
+
 
 </script>
+
 
 </body>
 </html>
