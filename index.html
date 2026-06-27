@@ -13,14 +13,13 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* BODY */
 body{
     height:100vh;
     overflow:hidden;
     background:#b9ff00;
 }
 
-/* TOP COLORS */
+/* TOP */
 .top{
     position:absolute;
     top:20px;
@@ -51,23 +50,6 @@ body{
     font-size:12px;
 }
 
-/* CONTROLS */
-.controls{
-    position:absolute;
-    right:20px;
-    top:140px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-button{
-    padding:6px;
-    border:2px solid black;
-    background:white;
-    cursor:pointer;
-}
-
 /* CENTER */
 .center{
     height:100vh;
@@ -84,28 +66,12 @@ button{
     align-items:center;
 }
 
-/* TEXT AREA */
+/* TEXT */
 #text{
     font-size:40px;
     letter-spacing:2px;
     white-space:pre-wrap;
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    align-content:center;
-    justify-content:center;
     text-align:center;
-}
-
-/* BLOCK MODE (SANS CADRES LOURDS) */
-.block{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:6px 10px;
-    font-size:18px;
-    border-radius:8px;
-    background:rgba(255,255,255,0.15);
 }
 
 /* INPUT */
@@ -142,12 +108,18 @@ textarea:focus{
     cursor:pointer;
 }
 
+button{
+    padding:6px;
+    border:2px solid black;
+    background:white;
+    cursor:pointer;
+}
 </style>
 </head>
 
 <body>
 
-<!-- COLORS -->
+<!-- TOP -->
 <div class="top">
     <div class="color" style="background:white" onclick="changeColor('white')"></div>
     <div class="color" style="background:#ffb6d9" onclick="changeColor('#ffb6d9')"></div>
@@ -156,6 +128,8 @@ textarea:focus{
     <div class="color black" onclick="changeColor('black')"></div>
 
     <div class="blur-btn" onclick="toggleBlur()">A</div>
+
+    <button onclick="toggleUpper()">MAJ / MIN</button>
 </div>
 
 <!-- PICKERS -->
@@ -169,15 +143,6 @@ textarea:focus{
         background<br>
         <input type="color" oninput="setBgColor(this.value)">
     </div>
-</div>
-
-<!-- CONTROLS -->
-<div class="controls">
-    <button onclick="toggleUpper()">MAJ / MIN</button>
-    <button onclick="setAlign('left')">GAUCHE</button>
-    <button onclick="setAlign('center')">CENTRE</button>
-    <button onclick="setAlign('right')">DROITE</button>
-    <button onclick="toggleBlocks()">BLOCS</button>
 </div>
 
 <!-- TEXT -->
@@ -196,15 +161,13 @@ textarea:focus{
 
 let blurOn = false;
 let isUpper = false;
-let align = "center";
-let blockMode = false;
 
 /* UPDATE */
 function updateText(){
     render();
 }
 
-/* RENDER SYSTEM */
+/* RENDER */
 function render(){
 
     let v = document.getElementById("input").value;
@@ -215,40 +178,9 @@ function render(){
 
     container.innerHTML = "";
 
-    /* BLUR */
     container.style.filter = blurOn ? "blur(1.2px)" : "none";
 
-    /* ALIGN */
-    container.style.justifyContent =
-        align === "left" ? "flex-start" :
-        align === "right" ? "flex-end" :
-        "center";
-
-    container.style.textAlign = align;
-
-    /* MODE BLOCS */
-    if(blockMode){
-
-        container.style.display = "flex";
-
-        let words = v.split(/\s+/);
-
-        words.forEach(w => {
-
-            if(!w.trim()) return;
-
-            let div = document.createElement("div");
-            div.className = "block";
-            div.innerText = w;
-
-            container.appendChild(div);
-        });
-
-    } else {
-
-        container.style.display = "block";
-        container.innerText = v;
-    }
+    container.innerText = v;
 }
 
 /* BLUR */
@@ -260,18 +192,6 @@ function toggleBlur(){
 /* MAJ / MIN */
 function toggleUpper(){
     isUpper = !isUpper;
-    render();
-}
-
-/* ALIGN */
-function setAlign(a){
-    align = a;
-    render();
-}
-
-/* BLOCS */
-function toggleBlocks(){
-    blockMode = !blockMode;
     render();
 }
 
